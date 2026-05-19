@@ -125,7 +125,7 @@ const lord = {
 <!-- ║                  FEATURED PROJECT                            ║ -->
 <!-- ╚══════════════════════════════════════════════════════════════╝ -->
 
-## 🚀 Featured Project — AesirMC
+## 🚀 Featured Project — AesirMC MMORPG
 
 ```yaml
 project:   "AesirMC — High-Capacity MMORPG Server"
