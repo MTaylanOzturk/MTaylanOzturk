@@ -125,18 +125,6 @@ const lord = {
 <!-- ║                  FEATURED PROJECT                            ║ -->
 <!-- ╚══════════════════════════════════════════════════════════════╝ -->
 
-## 🚀 Featured Project — AesirMC MMORPG
-
-```yaml
-project:   "AesirMC — High-Capacity MMORPG Server"
-capacity:  "180 concurrent players"
-stack:     [Java, Docker Compose, MariaDB, Redis, Velocity, PaperMC]
-role:      "Backend Infrastructure & Plugin Development"
-scope:     |
-  Full server architecture, custom RPG mechanics, loot economy,
-  multi-instance routing, and large-world storage optimization.
-```
-
 <br/>
 
 <!-- ╔══════════════════════════════════════════════════════════════╗ -->
