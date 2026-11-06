@@ -103,7 +103,8 @@ def digest(user):
     weeks = [[(d["date"], d["contributionCount"]) for d in w["contributionDays"]]
              for w in user["contributionsCollection"]["contributionCalendar"]["weeks"]]
     year = [day for week in weeks for day in week]
-    history = dict(user["history"])
+    today = year[-1][0]
+    history = {date: count for date, count in user["history"].items() if date <= today}  # years run to 31 Dec
     history.update(dict(year))
     if sum(c for _, c in year) == 0 or len(year) < 300:
         raise SystemExit("contribution calendar looks empty, keeping the previous panels")
