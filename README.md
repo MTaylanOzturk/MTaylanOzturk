@@ -8,7 +8,7 @@
 </p>
 
 <p align="center">
-I started writing code at <b>15</b> and never stopped. Today I build backend systems in the <b>Java ecosystem</b> at <b>AesirMC</b>, a live game server network, while studying <b>Software Engineering</b> at <b>Aksaray University</b>. I have also started building games on <b>Roblox</b> with <b>Lua</b>.
+I started writing code at <b>15</b> and never stopped. Today I build backend systems in the <b>Java ecosystem</b> at <b>AesirMC</b>, a live game server network, while studying <b>Software Engineering</b> at <b>Aksaray University</b>. I have also built <b>4 games on Roblox</b> with <b>Lua</b>.
 </p>
 
 <p align="center">

@@ -249,7 +249,7 @@ def hero(d, layout):
             f'<image class="fade" {image} href="{image_uri("aurora-b.webp")}"/>',
             f'<rect width="{width}" height="{height}" fill="url(#scrim)"/>',
             f'<rect width="{width}" height="2" fill="url(#rule)"/>')
-    figures = ((fmt(d["all_time"]), "CONTRIBUTIONS"), ("800K+", "LINES OF JAVA"), (str(d["longest"]), "DAY LONGEST STREAK"))
+    figures = ((fmt(d["all_time"]), "CONTRIBUTIONS"), ("800K+", "LINES OF JAVA"), ("4", "ROBLOX GAMES"))
     soft = "#C6D3E0"
     if wide:
         left = 56
@@ -281,7 +281,7 @@ def hero(d, layout):
         for i, (value, caption) in enumerate(figures):
             x = left + i * cell
             svg.add(svg.text(value, x, 340, 32, "#FFFFFF", "sansb"))
-            for k, part in enumerate(caption.replace("DAY LONGEST ", "DAY LONGEST|").replace("LINES OF ", "LINES OF|").split("|")):
+            for k, part in enumerate(caption.replace("ROBLOX ", "ROBLOX|").replace("LINES OF ", "LINES OF|").split("|")):
                 svg.add(svg.text(part, x, 362 + k * 15, 10, soft, spacing=1))
         svg.add("</g>", svg.text("AesirMC   ·   Aksaray University   ·   Türkiye", left, 430, 12.5, "#93A3B7"))
     svg.add(f'<rect x=".75" y=".75" width="{width - 1.5}" height="{height - 1.5}" rx="15.5" fill="none" stroke="#FFF" stroke-opacity=".08" stroke-width="1.5"/></g>')
