@@ -1,0 +1,67 @@
+name: Profile panels
+
+on:
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "generator/**"
+      - ".github/workflows/profile.yml"
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: profile-panels
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+
+      # Start from the last good panels, so a failed step can never leave a broken image behind.
+      - uses: actions/checkout@v5
+        with:
+          ref: output
+          path: dist
+
+      - name: Render panels
+        run: python3 generator/build.py --out dist
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Render snake
+        uses: Platane/snk/svg-only@v3
+        continue-on-error: true
+        with:
+          github_user_name: ${{ github.repository_owner }}
+          outputs: |
+            dist/snake.svg?color_snake=#0F766E&color_dots=#EBEDF0,#99E6D0,#4FCFAE,#1F9E80,#0F6B57
+            dist/snake-dark.svg?palette=github-dark&color_snake=#2EE6A6&color_dots=#161B22,#14504F,#17807A,#22B8A0,#2EE6A6
+
+      - name: Publish to the output branch
+        working-directory: dist
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "panels unchanged"
+            exit 0
+          fi
+          git checkout --orphan next
+          git commit -qm "Update profile panels"
+          git push --force origin next:output
+
+      # GitHub pauses schedules after 60 quiet days. Re-enabling resets that timer.
+      - name: Keep the schedule alive
+        continue-on-error: true
+        run: gh api --method PUT "repos/${{ github.repository }}/actions/workflows/profile.yml/enable"
+        env:
+          GH_TOKEN: ${{ github.token }}
