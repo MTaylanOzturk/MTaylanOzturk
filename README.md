@@ -3,12 +3,12 @@
 <p align="center">
 <picture>
   <source media="(max-width: 640px)" srcset="https://raw.githubusercontent.com/MTaylanOzturk/MTaylanOzturk/output/hero-narrow.svg" />
-  <img src="https://raw.githubusercontent.com/MTaylanOzturk/MTaylanOzturk/output/hero.svg" width="100%" alt="Lord: Mahmut Taylan Öztürk. Backend Developer, Java Ecosystem, Game Server Architect." />
+  <img src="https://raw.githubusercontent.com/MTaylanOzturk/MTaylanOzturk/output/hero.svg" width="100%" alt="Mahmut Taylan Öztürk. Backend Developer: Java ecosystem, game server architecture and Roblox development." />
 </picture>
 </p>
 
 <p align="center">
-I started writing code at <b>15</b> and never stopped. Today I build backend systems in the <b>Java ecosystem</b> at <b>AesirMC</b>, a live game server network, while studying <b>Software Engineering</b> at <b>Aksaray University</b>.
+I started writing code at <b>15</b> and never stopped. Today I build backend systems in the <b>Java ecosystem</b> at <b>AesirMC</b>, a live game server network, while studying <b>Software Engineering</b> at <b>Aksaray University</b>. I have also started building games on <b>Roblox</b> with <b>Lua</b>.
 </p>
 
 <p align="center">
@@ -59,7 +59,7 @@ I started writing code at <b>15</b> and never stopped. Today I build backend sys
 <p align="center">
 <picture>
   <source media="(max-width: 640px)" srcset="https://raw.githubusercontent.com/MTaylanOzturk/MTaylanOzturk/output/stack-narrow.svg" />
-  <img src="https://raw.githubusercontent.com/MTaylanOzturk/MTaylanOzturk/output/stack.svg" width="100%" alt="Tech stack: languages, data, infrastructure and game server tools" />
+  <img src="https://raw.githubusercontent.com/MTaylanOzturk/MTaylanOzturk/output/stack.svg" width="100%" alt="Technology stack: languages, data, infrastructure and game development" />
 </picture>
 </p>
 
@@ -79,7 +79,7 @@ I started writing code at <b>15</b> and never stopped. Today I build backend sys
 <p align="center">
 <picture>
   <source media="(max-width: 640px)" srcset="https://raw.githubusercontent.com/MTaylanOzturk/MTaylanOzturk/output/footer-narrow.svg" />
-  <img src="https://raw.githubusercontent.com/MTaylanOzturk/MTaylanOzturk/output/footer.svg" width="100%" alt="No tree can grow to heaven unless its roots reach down to hell. Friedrich Nietzsche." />
+  <img src="https://raw.githubusercontent.com/MTaylanOzturk/MTaylanOzturk/output/footer.svg" width="100%" alt="No tree can grow to heaven unless its roots reach down to hell. Carl Jung." />
 </picture>
 </p>
 

@@ -23,7 +23,7 @@ ICONS = {
     "csharp": "dotnet", "mongodb": "mongodb", "mariadb": "mariadb", "mysql": "mysql", "redis": "redis",
     "postgresql": "postgresql", "docker": "docker", "linux": "linux", "git": "git", "github": "github",
     "actions": "githubactions", "nginx": "nginx", "gradle": "gradle", "grafana": "grafana", "nextjs": "nextdotjs",
-    "pterodactyl": "pterodactyl",
+    "pterodactyl": "pterodactyl", "lua": "lua", "roblox": "roblox", "robloxstudio": "robloxstudio",
 }
 
 
@@ -101,18 +101,6 @@ def aurora(w, h, seed, phase):
         profile = np.where(depth > 0, np.exp(-depth * 1.5) * (1 - 0.55 * np.exp(-depth * 3)), 0.45 * np.exp(depth * 5))
         light = profile * (0.28 + 0.72 * rays[None, :]) * envelope[None, :] * gain
         img += light[..., None] * np.array(colour, dtype=np.float32) * 0.92
-
-    # Stepped voxel ridges in three depth layers.
-    for layer, (level, relief, step, shade) in enumerate(((0.78, 0.17, 28, (20, 38, 64)), (0.86, 0.12, 22, (12, 22, 42)), (0.94, 0.07, 16, (6, 10, 20)))):
-        ridge_rng = np.random.default_rng(100 + layer)
-        ridge = smooth_noise(w, 9 + layer * 4, ridge_rng) * 0.65 + smooth_noise(w, 26, ridge_rng) * 0.35
-        stepped = np.repeat(ridge[::step], step)[:w]
-        line = np.round(((level - relief * (stepped - 0.5) * 2) * h) / step) * step
-        mask = yy >= line[None, :]
-        below = np.clip((yy - line[None, :]) / (h * 0.22), 0, 1)[..., None]
-        img = np.where(mask[..., None], np.array(shade, dtype=np.float32) * (1 - below * 0.45), img)
-        rim = mask & (yy < line[None, :] + 3)
-        img[rim] += np.array((30, 74, 84), dtype=np.float32) * (1 - layer * 0.35)
 
     # Vignette plus grain, which keeps the dark gradients from banding.
     d = ((xx / w - 0.5) ** 2 * 1.3 + (v - 0.5) ** 2 * 0.8)

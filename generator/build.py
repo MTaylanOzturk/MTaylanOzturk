@@ -210,14 +210,14 @@ class Svg:
                 f'<style>{style}</style><defs>{"".join(self.defs)}</defs>{"".join(self.body)}</svg>')
 
 
-def panel(label, command, width, height, updated="", style=""):
-    """Dark terminal card shared by every data panel. Reads the same on light and dark GitHub themes."""
+def panel(label, title, width, height, updated="", style=""):
+    """Dark card shared by every data panel. Reads the same on light and dark GitHub themes."""
     svg = Svg(width, height, label, style)
     svg.defs.append(f'<linearGradient id="edge" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="{TEAL}"/>'
                     f'<stop offset=".5" stop-color="{CYAN}"/><stop offset="1" stop-color="{VIOLET}"/></linearGradient>')
     svg.add(f'<rect x=".5" y=".5" width="{width - 1}" height="{height - 1}" rx="14" fill="{PANEL}" stroke="{LINE}"/>',
             f'<rect x="24" y="0" width="{width - 48}" height="1.5" fill="url(#edge)"/>',
-            svg.text("$", 24, 37, 15, TEAL, "monob"), svg.text(command, 42, 37, 15, INK2))
+            svg.text(title, 24, 39, 18, INK, "sansb"))
     if updated:
         svg.add(f'<circle cx="{width - 24 - svg.measure(updated, 12) - 13}" cy="32" r="3.5" fill="{TEAL}">'
                 '<animate attributeName="opacity" values="1;.25;1" dur="2.4s" repeatCount="indefinite"/></circle>',
@@ -231,126 +231,60 @@ def image_uri(name):
 
 # ─────────────────────────────── hero ────────────────────────────────
 
-LETTERS = {
-    "L": ("#....", "#....", "#....", "#....", "#....", "#....", "#####"),
-    "O": (".###.", "#...#", "#...#", "#...#", "#...#", "#...#", ".###."),
-    "R": ("####.", "#...#", "#...#", "####.", "#.#..", "#..#.", "#...#"),
-    "D": ("####.", "#...#", "#...#", "#...#", "#...#", "#...#", "####."),
-}
-TAGLINES = (
-    "backend developer @ AesirMC",
-    "software engineering @ Aksaray University",
-    "java · sql · docker · mongodb · redis",
-    "building game server infrastructure at scale",
-    "coffee.level = CRITICAL, refilling...",
-)
-
-
-def voxel_word(word, ox, oy, s):
-    """Extruded block letters in a cabinet projection. Faces: front, top, right."""
-    ux, uy = s, -s * 0.05         # one column to the right
-    bx, by = s * 0.46, -s * 0.34  # extrusion towards the back
-    columns = sum(5 for _ in word) + len(word) - 1
-    rng = random.Random(4)
-    cubes = []
-    col = 0
-    for letter in word:
-        for r, row in enumerate(LETTERS[letter]):
-            for c, cell in enumerate(row):
-                if cell == "#":
-                    cubes.append((col + c, 6 - r))
-        col += 6
-    cubes.sort(key=lambda p: (p[1], p[0]))  # bottom-up, left-to-right, so nearer faces paint last
-    out = []
-    for c, h in cubes:
-        x0, y0 = ox + c * ux, oy + c * uy - h * s
-        t = c / (columns - 1)
-        base = mix(TEAL, CYAN, t * 2) if t <= 0.5 else mix(CYAN, VIOLET, (t - 0.5) * 2)
-        front = [(x0, y0), (x0 + ux, y0 + uy), (x0 + ux, y0 + uy - s), (x0, y0 - s)]
-        top = [front[3], front[2], (front[2][0] + bx, front[2][1] + by), (front[3][0] + bx, front[3][1] + by)]
-        side = [front[1], (front[1][0] + bx, front[1][1] + by), (front[2][0] + bx, front[2][1] + by), front[2]]
-        pts = lambda p: " ".join(f"{num(a)},{num(b)}" for a, b in p)
-        delay = c * 28 + rng.randrange(0, 180)
-        shine = c * 90 + 1800
-        out.append(
-            f'<g class="drop" style="animation-delay:{delay}ms">'
-            f'<polygon points="{pts(side)}" fill="{mix(base, "#050814", .62)}"/>'
-            f'<polygon points="{pts(top)}" fill="{mix(base, "#FFFFFF", .42)}"/>'
-            f'<polygon points="{pts(front)}" fill="{mix(base, "#0A1020", .12)}" stroke="{mix(base, "#FFFFFF", .55)}" stroke-width=".7"/>'
-            f'<polygon class="shine" style="animation-delay:{shine}ms" points="{pts(front)}" fill="#FFF"/></g>')
-    return "".join(out)
-
-
-def typing_bar(svg, cx, y, size):
-    """Cycling typewriter line. Each row reveals through a stepped clip, driven by SMIL."""
-    per_line, hold = 4.2, 0.62
-    total = per_line * len(TAGLINES)
-    advance = GLYPHS["mono"]["a"][1] * size / 1000
-    prompt = "lord@aesirmc:~$ "
-    width = max(len(t) for t in TAGLINES) * advance + len(prompt) * advance
-    x = cx - width / 2
-    box = f'<rect x="{num(x - 18)}" y="{y - size - 12}" width="{num(width + 36)}" height="{size + 28}" rx="9" fill="#060A12" fill-opacity=".72" stroke="#FFFFFF" stroke-opacity=".12"/>'
-    text_x = x + len(prompt) * advance
-    rows = []
-    for i, line in enumerate(TAGLINES):
-        n = len(line)
-        start, typed, end = i / len(TAGLINES), (i + hold) / len(TAGLINES), (i + 0.97) / len(TAGLINES)
-        times, widths = [0.0], [0.0]
-        for k in range(n + 1):
-            times.append(start + (typed - start) * 0.72 * k / n)
-            widths.append(k * advance + (advance if k == n else 0))
-        if i == 0:
-            times, widths = times[1:], widths[1:]
-        times += [end, min(end + 0.0005, 1.0)]
-        widths += [widths[-1], 0.0]
-        if times[-1] < 1:
-            times.append(1.0)
-            widths.append(0.0)
-        svg.defs.append(
-            f'<clipPath id="ty{i}"><rect x="{num(text_x)}" y="{y - size - 8}" width="0" height="{size + 20}">'
-            f'<animate attributeName="width" calcMode="discrete" dur="{total}s" repeatCount="indefinite" '
-            f'values="{";".join(num(w) for w in widths)}" keyTimes="{";".join(f"{t:.4f}" for t in times)}"/></rect></clipPath>')
-        rows.append(f'<g clip-path="url(#ty{i})">{svg.text(line, text_x, y, size, INK)}</g>')
-    return box + svg.text(prompt.rstrip(), x, y, size, TEAL, "monob") + "".join(rows)
-
-
-def hero(layout):
+def hero(d, layout):
     wide = layout == WIDE
-    width, height = (WIDE, 460) if wide else (NARROW, 420)
-    style = (".drop{animation:drop 1s cubic-bezier(.2,1.25,.35,1) both}"
-             "@keyframes drop{from{transform:translateY(-420px);opacity:0}}"
-             ".shine{opacity:0;animation:shine 9s ease-in-out infinite}"
-             "@keyframes shine{0%,7%,100%{opacity:0}3.5%{opacity:.5}}"
-             ".fade{animation:fade 12s ease-in-out infinite alternate}"
-             "@keyframes fade{0%,25%{opacity:0}75%,100%{opacity:1}}"
-             ".up{animation:up 1s ease-out both}@keyframes up{from{transform:translateY(14px);opacity:0}}"
-             ".mote{animation:mote linear infinite}"
-             "@keyframes mote{from{transform:translateY(0);opacity:0}15%{opacity:.8}to{transform:translateY(-170px);opacity:0}}")
-    svg = Svg(width, height, "Lord — Mahmut Taylan Öztürk. Backend Developer, Java Ecosystem, Game Server Architect.", style)
+    width, height = (WIDE, 400) if wide else (NARROW, 470)
+    style = (".fade{animation:fade 14s ease-in-out infinite alternate}"
+             "@keyframes fade{0%,20%{opacity:0}80%,100%{opacity:1}}"
+             ".up{animation:up .9s ease-out both}@keyframes up{from{transform:translateY(10px);opacity:0}}")
+    svg = Svg(width, height, "Mahmut Taylan Öztürk. Backend Developer: Java ecosystem, game server architecture and Roblox development.", style)
     svg.defs.append(f'<clipPath id="card"><rect width="{width}" height="{height}" rx="16"/></clipPath>'
-                    '<linearGradient id="veil" x1="0" y1="0" x2="0" y2="1"><stop offset=".45" stop-color="#050812" stop-opacity="0"/>'
-                    '<stop offset="1" stop-color="#050812" stop-opacity=".82"/></linearGradient>')
-    image = 'x="{x}" y="0" width="{w}" height="{h}" preserveAspectRatio="xMidYMid slice"'.format(
-        x=0 if wide else -240, w=WIDE, h=height)
+                    '<linearGradient id="scrim" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#070B13"/>'
+                    '<stop offset=".5" stop-color="#070B13" stop-opacity=".8"/><stop offset="1" stop-color="#070B13" stop-opacity=".04"/></linearGradient>'
+                    f'<linearGradient id="rule" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="{TEAL}"/>'
+                    f'<stop offset=".5" stop-color="{CYAN}"/><stop offset="1" stop-color="{VIOLET}"/></linearGradient>')
+    image = f'x="{0 if wide else -240}" y="0" width="{WIDE}" height="{height}" preserveAspectRatio="xMidYMid slice"'
     svg.add('<g clip-path="url(#card)">',
             f'<image {image} href="{image_uri("aurora-a.webp")}"/>',
             f'<image class="fade" {image} href="{image_uri("aurora-b.webp")}"/>',
-            f'<rect width="{width}" height="{height}" fill="url(#veil)"/>')
-    rng = random.Random(9)
-    for _ in range(12):
-        x, y, s = rng.uniform(30, width - 30), rng.uniform(height * .7, height - 16), rng.choice((2, 3))
-        svg.add(f'<rect class="mote" style="animation-duration:{rng.uniform(7, 15):.1f}s;animation-delay:-{rng.uniform(0, 15):.1f}s" '
-                f'x="{x:.0f}" y="{y:.0f}" width="{s}" height="{s}" fill="{rng.choice((TEAL, CYAN, VIOLET))}"/>')
-    block = 25 if wide else 17
-    word_w = 23 * block + block * .46
-    svg.add(voxel_word("LORD", (width - word_w) / 2, (256 if wide else 190), block))
-    cx = width / 2
-    name_y, role_y, bar_y = (318, 350, 410) if wide else (250, 282, 366)
-    svg.add(f'<g class="up" style="animation-delay:1.4s">{svg.text("Mahmut Taylan Öztürk", cx, name_y, 36 if wide else 30, "#FFFFFF", "sansb", "middle", .4)}</g>')
-    role = ("BACKEND DEVELOPER  ·  JAVA ECOSYSTEM  ·  GAME SERVER ARCHITECT", 14.5, 2.2) if wide else ("BACKEND  ·  JAVA  ·  GAME SERVERS", 13.5, 2)
-    svg.add(f'<g class="up" style="animation-delay:1.6s">{svg.text(role[0], cx, role_y, role[1], "#BFD4E6", "mono", "middle", role[2])}</g>')
-    svg.add(f'<g class="up" style="animation-delay:1.9s">{typing_bar(svg, cx, bar_y, 16 if wide else 12.5)}</g>')
-    svg.add(f'<rect x=".75" y=".75" width="{width - 1.5}" height="{height - 1.5}" rx="15.5" fill="none" stroke="#FFF" stroke-opacity=".1" stroke-width="1.5"/></g>')
+            f'<rect width="{width}" height="{height}" fill="url(#scrim)"/>',
+            f'<rect width="{width}" height="2" fill="url(#rule)"/>')
+    figures = ((fmt(d["all_time"]), "CONTRIBUTIONS"), ("800K+", "LINES OF JAVA"), (str(d["longest"]), "DAY LONGEST STREAK"))
+    soft = "#C6D3E0"
+    if wide:
+        left = 56
+        svg.add('<g class="up">', svg.text("BACKEND DEVELOPER", left, 92, 13, TEAL, "monob", spacing=3.2),
+                svg.text("Mahmut Taylan", left, 164, 68, "#FFFFFF", "sansb", spacing=-.6),
+                svg.text("Öztürk", left, 236, 68, "#FFFFFF", "sansb", spacing=-.6),
+                svg.text("Java ecosystem, game server architecture", left, 282, 18, soft, "sans"),
+                svg.text("and Roblox development.", left, 308, 18, soft, "sans"),
+                svg.text("AesirMC   ·   Aksaray University   ·   Türkiye", left, 352, 13, "#93A3B7"), "</g>")
+        rx = 690
+        svg.add(f'<g class="up" style="animation-delay:.25s"><rect x="{rx - 38}" y="72" width="1" height="256" fill="#FFF" fill-opacity=".16"/>')
+        for i, (value, caption) in enumerate(figures):
+            y = 112 + i * 92
+            svg.add(svg.text(value, rx, y, 44, "#FFFFFF", "sansb"),
+                    svg.text(caption, rx, y + 24, 11.5, soft, spacing=1.6))
+            if i < 2:
+                svg.add(f'<rect x="{rx}" y="{y + 42}" width="250" height="1" fill="#FFF" fill-opacity=".12"/>')
+        svg.add("</g>")
+    else:
+        left = 32
+        svg.add('<g class="up">', svg.text("BACKEND DEVELOPER", left, 62, 12.5, TEAL, "monob", spacing=3),
+                svg.text("Mahmut Taylan", left, 124, 56, "#FFFFFF", "sansb", spacing=-.5),
+                svg.text("Öztürk", left, 184, 56, "#FFFFFF", "sansb", spacing=-.5),
+                svg.text("Java ecosystem, game server architecture", left, 228, 16.5, soft, "sans"),
+                svg.text("and Roblox development.", left, 252, 16.5, soft, "sans"), "</g>")
+        cell = (width - 2 * left) / 3
+        svg.add('<g class="up" style="animation-delay:.25s">',
+                f'<rect x="{left}" y="288" width="{width - 2 * left}" height="1" fill="#FFF" fill-opacity=".16"/>')
+        for i, (value, caption) in enumerate(figures):
+            x = left + i * cell
+            svg.add(svg.text(value, x, 340, 32, "#FFFFFF", "sansb"))
+            for k, part in enumerate(caption.replace("DAY LONGEST ", "DAY LONGEST|").replace("LINES OF ", "LINES OF|").split("|")):
+                svg.add(svg.text(part, x, 362 + k * 15, 10, soft, spacing=1))
+        svg.add("</g>", svg.text("AesirMC   ·   Aksaray University   ·   Türkiye", left, 430, 12.5, "#93A3B7"))
+    svg.add(f'<rect x=".75" y=".75" width="{width - 1.5}" height="{height - 1.5}" rx="15.5" fill="none" stroke="#FFF" stroke-opacity=".08" stroke-width="1.5"/></g>')
     return svg
 
 
@@ -410,7 +344,7 @@ def stats(d, layout):
             ".rise{animation:grow .9s cubic-bezier(.2,.9,.3,1) both;transform-box:fill-box;transform-origin:bottom}@keyframes grow{from{transform:scaleY(0)}}"
     label = (f"GitHub stats: {fmt(d['year_total'])} contributions in the last 12 months, {fmt(d['all_time'])} all time, "
              f"longest streak {d['longest']} days, current streak {d['streak']} days, best day {d['peak']}.")
-    svg = panel(label, "git log --stat", width, height, f"updated {d['updated']}", style)
+    svg = panel(label, "GitHub Statistics", width, height, f"updated {d['updated']}", style)
     share = round(d["active"] / d["days"] * 100)
     peak_day = dt.date.fromisoformat(d["peak_date"]).strftime("%d %b %Y")
     gap = 12
@@ -472,11 +406,11 @@ def city(d, layout):
     height = int(origin_y + 7 * by + 74)
     style = ".wk{animation:rise .7s cubic-bezier(.2,1.1,.35,1) both}@keyframes rise{from{transform:translateY(46px);opacity:0}}"
     label = f"Contribution city: {fmt(d['year_total'])} contributions in the last 12 months, drawn as one voxel column per day."
-    svg = panel(label, "render --city ./contributions", width, height, f"{fmt(d['year_total'])} in 12 months", style)
+    svg = panel(label, "Contribution City", width, height, "", style)
     peak = max(c for w in weeks for _, c in w) or 1
     if wide:
-        svg.add(svg.text("Contribution City", 30, 98, 30, INK, "sansb"),
-                svg.text("One tower for every day of the last year.", 30, 124, 13.5, INK2))
+        svg.add(svg.text(fmt(d["year_total"]), 30, 112, 46, INK, "sansb"),
+                svg.text("contributions in the last 12 months, one tower per day", 30, 138, 13.5, INK2))
 
     def project(w, day, lift=0.0):
         return origin_x + w * ax + day * bx, origin_y - w * ay + day * by - lift
@@ -575,7 +509,7 @@ def activity(d, layout):
     style = (".draw{stroke-dasharray:1;stroke-dashoffset:0;animation:draw 2.2s ease-out both}@keyframes draw{from{stroke-dashoffset:1}}"
              ".area{animation:show 1.2s 1.2s both}.pin{animation:show .5s 2s both}@keyframes show{from{opacity:0}}")
     label = f"Activity graph: {fmt(total)} contributions in the last {span} days."
-    svg = panel(label, f"git activity --days {span}", width, height, f"{fmt(total)} in {span} days · {num(total / span)} per day", style)
+    svg = panel(label, f"Activity, Last {span} Days", width, height, f"{fmt(total)} in {span} days · {num(total / span)} per day", style)
     left, right, top, bottom = 52, width - 26, 66, height - 42
     ceiling = nice_ceiling(max(c for _, c in days))
     sx = lambda i: left + (right - left) * i / (len(days) - 1)
@@ -615,7 +549,7 @@ def languages(d, layout):
     height = 70 + rows * 44 + 8
     style = ".bar{animation:grow 1.2s cubic-bezier(.2,.9,.3,1) both;transform-box:fill-box;transform-origin:left}@keyframes grow{from{transform:scaleX(0)}}"
     summary = ", ".join(f"{n} {s * 100:.1f}%" for n, s in entries[:5])
-    svg = panel(f"Top languages: {summary}.", "linguist --top 8", width, height, "public + private projects", style)
+    svg = panel(f"Top languages: {summary}.", "Top Languages", width, height, "public + private projects", style)
     col_w = (width - 48 - 32 * (columns - 1)) / columns
     name_w, value_w = 92, 56
     track_w = col_w - name_w - value_w
@@ -666,7 +600,7 @@ def trophies(d, layout):
     style = (".sweep{animation:sweep 6s ease-in-out infinite}@keyframes sweep{0%,55%{transform:translateX(-120px)}85%,100%{transform:translateX(120px)}}"
              ".medal{animation:pop .7s cubic-bezier(.2,1.5,.4,1) both;transform-box:fill-box;transform-origin:center}@keyframes pop{from{transform:scale(.4);opacity:0}}")
     label = "Trophies: " + ", ".join(f"{t} {TIERS[r][1].title()}" for r, t, _ in earned) + "."
-    svg = panel(label, "achievements --earned", width, int(height), style=style)
+    svg = panel(label, "Trophies", width, int(height), style=style)
     R = 44
     for i, (tier, title, shown) in enumerate(earned):
         col, row = i % per_row, i // per_row
@@ -691,14 +625,14 @@ def trophies(d, layout):
 
 STACK = (
     ("LANGUAGES", (("java", "Java", "#F89820"), ("kotlin", "Kotlin", "#A97BFF"), ("typescript", "TypeScript", "#3178C6"),
-                   ("python", "Python", "#FFD43B"), ("javascript", "JavaScript", "#F7DF1E"), ("text:C#", "C#", "#9B6BDF"))),
+                   ("python", "Python", "#FFD43B"), ("javascript", "JavaScript", "#F7DF1E"), ("lua", "Lua", "#7C8FF5"), ("text:C#", "C#", "#9B6BDF"))),
     ("DATA", (("mongodb", "MongoDB", "#47A248"), ("redis", "Redis", "#FF5A4F"), ("mariadb", "MariaDB", "#C0765A"),
               ("text:My", "MySQL", "#5B9BD5"), ("postgresql", "PostgreSQL", "#6C93D9"))),
     ("INFRA", (("docker", "Docker", "#2496ED"), ("linux", "Linux", "#FCC624"), ("nginx", "Nginx", "#21B05A"),
                ("grafana", "Grafana", "#F46800"), ("actions", "Actions", "#5A9BF6"), ("gradle", "Gradle", "#3DB8C5"),
                ("git", "Git", "#F05032"))),
-    ("GAME SERVER", ((None, "Minecraft", "#62B47A"), (None, "PaperMC", "#EDEDED"), (None, "Velocity", "#3CC8D0"),
-                     ("pterodactyl", "Pterodactyl", "#6AA6E8"), (None, "ProtocolLib", "#C98BFF"))),
+    ("GAME DEV", (("roblox", "Roblox", "#E8EEF5"), ("robloxstudio", "Roblox Studio", "#38A7FF"), (None, "Minecraft", "#62B47A"), (None, "PaperMC", "#EDEDED"), (None, "Velocity", "#3CC8D0"),
+                     ("pterodactyl", "Pterodactyl", "#6AA6E8"))),
 )
 
 
@@ -726,7 +660,7 @@ def stack(layout):
     height = 62
     for _, lines in blocks:
         height += (len(lines) * (chip_h + 8)) + (22 if not wide else 0) + 10
-    svg = panel(f"Tech stack: {names}.", "ls ~/stack", width, height + 8, style=style)
+    svg = panel(f"Tech stack: {names}.", "Technology Stack", width, height + 8, style=style)
     for caption, lines in blocks:
         label_y = y + 24 if wide else y + 10
         svg.add(svg.text(caption, 24, label_y, 11, INK3, spacing=1.2))
@@ -757,7 +691,7 @@ def repo_card(node):
     width, height = 490, 176
     style = ".lift{animation:up .8s ease-out both}@keyframes up{from{transform:translateY(10px);opacity:0}}"
     description = node["description"] or "No description yet."
-    svg = panel(f"Repository {node['name']}: {description}", f"cd ~/{node['name']}", width, height, style=style)
+    svg = panel(f"Repository {node['name']}: {description}", "Open Source", width, height, style=style)
     svg.add('<g class="lift">', svg.text(node["name"], 24, 84, 26, INK, "sansb"))
     for i, line in enumerate(textwrap.wrap(description.encode("ascii", "ignore").decode(), 55)[:2]):
         svg.add(svg.text(line, 24, 110 + i * 19, 13, INK2))
@@ -803,18 +737,18 @@ DISCORD_ICON = "M20.32 4.37A19.8 19.8 0 0 0 15.43 2.8a13.7 13.7 0 0 0-.63 1.28 1
 
 def footer(layout):
     wide = layout == WIDE
-    width, height = (WIDE, 210) if wide else (NARROW, 220)
+    width, height = (WIDE, 170) if wide else (NARROW, 190)
     svg = Svg(width, height, "No tree can grow to heaven unless its roots reach down to hell.")
     svg.defs.append(f'<clipPath id="card"><rect width="{width}" height="{height}" rx="16"/></clipPath>')
     svg.add('<g clip-path="url(#card)">',
-            f'<image x="{0 if wide else -240}" y="-218" width="{WIDE}" height="440" preserveAspectRatio="xMidYMid slice" href="{image_uri("aurora-b.webp")}"/>',
+            f'<image x="{0 if wide else -240}" y="-160" width="{WIDE}" height="440" preserveAspectRatio="xMidYMid slice" href="{image_uri("aurora-b.webp")}"/>',
             f'<rect width="{width}" height="{height}" fill="#050812" fill-opacity=".3"/>')
     if wide:
-        svg.add(svg.text("No tree can grow to heaven unless its roots reach down to hell.", width / 2, 88, 22, "#FFFFFF", "sansb", "middle"))
+        svg.add(svg.text("No tree can grow to heaven unless its roots reach down to hell.", width / 2, 84, 22, "#FFFFFF", "sansb", "middle"))
     else:
         svg.add(svg.text("No tree can grow to heaven", width / 2, 76, 22, "#FFFFFF", "sansb", "middle"),
                 svg.text("unless its roots reach down to hell.", width / 2, 108, 22, "#FFFFFF", "sansb", "middle"))
-    svg.add(svg.text("FRIEDRICH NIETZSCHE", width / 2, (120 if wide else 140), 11, "#BFD4E6", "mono", "middle", 2.4), "</g>")
+    svg.add(svg.text("CARL JUNG", width / 2, (116 if wide else 142), 11, "#BFD4E6", "mono", "middle", 2.4), "</g>")
     return svg
 
 
@@ -834,7 +768,7 @@ def main():
 
     files = {}
     for suffix, layout in (("", WIDE), ("-narrow", NARROW)):
-        files[f"hero{suffix}.svg"] = hero(layout)
+        files[f"hero{suffix}.svg"] = hero(d, layout)
         files[f"stats{suffix}.svg"] = stats(d, layout)
         files[f"city{suffix}.svg"] = city(d, layout)
         files[f"activity{suffix}.svg"] = activity(d, layout)
