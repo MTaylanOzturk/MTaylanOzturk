@@ -3,16 +3,16 @@
 <p align="center">
 <picture>
   <source media="(max-width: 640px)" srcset="https://raw.githubusercontent.com/MTaylanOzturk/MTaylanOzturk/output/hero-narrow.svg" />
-  <img src="https://raw.githubusercontent.com/MTaylanOzturk/MTaylanOzturk/output/hero.svg" width="100%" alt="Mahmut Taylan Öztürk. Backend Developer: Java ecosystem, game server architecture and Roblox development." />
+  <img src="https://raw.githubusercontent.com/MTaylanOzturk/MTaylanOzturk/output/hero.svg" width="100%" alt="Mahmut Taylan Öztürk. Full Stack Developer: Java ecosystem, game server architecture and Roblox development." />
 </picture>
 </p>
 
 <p align="center">
-I started writing code at <b>15</b> and never stopped. Today I build backend systems in the <b>Java ecosystem</b> at <b>AesirMC</b>, a live game server network, while studying <b>Software Engineering</b> at <b>Aksaray University</b>. I have also built <b>4 games on Roblox</b> with <b>Lua</b>.
+I started writing code at <b>15</b> and never stopped. Today I build <b>full stack</b> systems at <b>AesirMC</b>, a live game server network, from <b>Java</b> backends to web frontends, while studying <b>Software Engineering</b> at <b>Aksaray University</b>. I have also built <b>4 games on Roblox</b> with <b>Lua</b>.
 </p>
 
 <p align="center">
-<b>800K+ lines of Java</b> across 29 projects, most of them private, so the numbers below count private work too.
+<b>800K+ lines of Java</b> across 29 projects and <b>240K+ lines of Lua</b> across my Roblox games. Most of it is private, so the numbers below count private work too.
 </p>
 
 <p align="center">

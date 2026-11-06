@@ -237,7 +237,7 @@ def hero(d, layout):
     style = (".fade{animation:fade 14s ease-in-out infinite alternate}"
              "@keyframes fade{0%,20%{opacity:0}80%,100%{opacity:1}}"
              ".up{animation:up .9s ease-out both}@keyframes up{from{transform:translateY(10px);opacity:0}}")
-    svg = Svg(width, height, "Mahmut Taylan Öztürk. Backend Developer: Java ecosystem, game server architecture and Roblox development.", style)
+    svg = Svg(width, height, "Mahmut Taylan Öztürk. Full Stack Developer: Java ecosystem, game server architecture and Roblox development.", style)
     svg.defs.append(f'<clipPath id="card"><rect width="{width}" height="{height}" rx="16"/></clipPath>'
                     '<linearGradient id="scrim" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#070B13"/>'
                     '<stop offset=".5" stop-color="#070B13" stop-opacity=".8"/><stop offset="1" stop-color="#070B13" stop-opacity=".04"/></linearGradient>'
@@ -253,7 +253,7 @@ def hero(d, layout):
     soft = "#C6D3E0"
     if wide:
         left = 56
-        svg.add('<g class="up">', svg.text("BACKEND DEVELOPER", left, 92, 13, TEAL, "monob", spacing=3.2),
+        svg.add('<g class="up">', svg.text("FULL STACK DEVELOPER", left, 92, 13, TEAL, "monob", spacing=3.2),
                 svg.text("Mahmut Taylan", left, 164, 68, "#FFFFFF", "sansb", spacing=-.6),
                 svg.text("Öztürk", left, 236, 68, "#FFFFFF", "sansb", spacing=-.6),
                 svg.text("Java ecosystem, game server architecture", left, 282, 18, soft, "sans"),
@@ -270,7 +270,7 @@ def hero(d, layout):
         svg.add("</g>")
     else:
         left = 32
-        svg.add('<g class="up">', svg.text("BACKEND DEVELOPER", left, 62, 12.5, TEAL, "monob", spacing=3),
+        svg.add('<g class="up">', svg.text("FULL STACK DEVELOPER", left, 62, 12.5, TEAL, "monob", spacing=3),
                 svg.text("Mahmut Taylan", left, 124, 56, "#FFFFFF", "sansb", spacing=-.5),
                 svg.text("Öztürk", left, 184, 56, "#FFFFFF", "sansb", spacing=-.5),
                 svg.text("Java ecosystem, game server architecture", left, 228, 16.5, soft, "sans"),
